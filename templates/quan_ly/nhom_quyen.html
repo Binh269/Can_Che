@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block tieu_de %}Phân Quyền - WeightMS{% endblock %}
+
+{% block css_trang %}
+<link rel="stylesheet" href="{% static 'css/quan_ly.css' %}?v=3">
+{% endblock %}
+
+{% block noi_dung %}
+<div class="tieu-de-trang">
+    <h1>🔑 Phân Quyền</h1>
+    <p>Gán nhóm quyền cho từng tài khoản</p>
+</div>
+
+<!-- Tab -->
+<div class="tab-bar">
+    <a href="{% url 'quan_ly_nguoi_dung' %}" class="tab-item">👤 Người dùng</a>
+    <a href="{% url 'quan_ly_nhom_quyen' %}" class="tab-item active">🔑 Phân quyền</a>
+</div>
+
+<!-- Du lieu JSON cho JS -->
+<div id="du-lieu-trang" style="display:none"
+    data-nhom-list='[{% for nh in danh_sach_nhom %}{"id":{{ nh.id }},"ten":"{{ nh.name }}"}{% if not forloop.last %},{% endif %}{% endfor %}]'>
+</div>
+
+<!-- Layout 2 cot -->
+<div class="luoi-phan-quyen">
+
+    <!-- COT TRAI: Danh sach tai khoan + quyen da phan -->
+    <div>
+        <div class="the">
+            <div class="the-tieu-de" style="justify-content:space-between;flex-wrap:wrap;gap:10px">
+                <span>👤 Tài Khoản &amp; Quyền Đã Phân</span>
+                <div style="display:flex;align-items:center;gap:10px">
+                    <span id="dem-tai-khoan-pq"
+                        style="font-size:12px;font-weight:500;color:var(--mau-chu-mo);white-space:nowrap">{{danh_sach_nguoi_dung|length}}
+                        tài khoản</span>
+                    <div class="tim-kiem-bang">
+                        <span class="icon-tim-kiem">🔍</span>
+                        <input type="text" id="inp-tim-phan-quyen" class="o-tim-kiem" placeholder="Tìm tài khoản..."
+                            autocomplete="off">
+                        <button class="btn-xoa-tim" id="btn-xoa-tim-pq" title="Xóa tìm kiếm">✕</button>
+                    </div>
+                </div>
+            </div>
+            <div class="bang-container">
+                <table class="bang">
+                    <thead>
+                        <tr>
+                            <th class="col-stt" style="width:40px">#</th>
+                            <th>Tài khoản</th>
+                            <th class="col-vai-tro">Loại</th>
+                            <th>Quyền đã phân</th>
+                            <th class="col-thao-tac" style="width:110px">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for nd in danh_sach_nguoi_dung %}
+                        <tr id="hang-pq-{{ nd.id }}">
+                            <td class="col-stt" data-label="STT" style="color:var(--mau-chu-mo);font-size:12px">
+                                {{forloop.counter }}</td>
+                            <td data-label="Tài khoản">
+                                <div style="font-weight:600;color:var(--mau-chu);font-size:13px">{{ nd.username }}</div>
+                                {% if nd.last_name %}<div style="font-size:11px;color:var(--mau-chu-mo)">Tên :
+                                    {{nd.last_name }}</div>{% endif %}
+                            </td>
+                            <td class="col-vai-tro" data-label="Loại">
+                                {% if nd.is_superuser %}
+                                <span class="badge badge-vang" style="font-size:10px;margin-top:2px">👑 Admin</span>
+                                {% else %}
+                                <span class="badge" style="font-size:10px;margin-top:2px">👤 Người dùng</span>
+                                {% endif %}
+                            </td>
+
+                            <td data-label="Quyền đã phân">
+                                <div class="danh-sach-tag-nhom" id="nhom-tags-{{ nd.id }}">
+                                    {% for nhom in nd.groups.all %}
+                                    <span class="tag-nhom">{{ nhom.name }}</span>
+                                    {% empty %}
+                                    <span class="chua-co-quyen">Chưa phân quyền</span>
+                                    {% endfor %}
+                                </div>
+                            </td>
+                            <td class="col-thao-tac" data-label="Thao tác">
+                                <button class="btn btn-chinh btn-nho btn-mo-phan-quyen" data-nd-id="{{ nd.id }}"
+                                    data-nd-ten="{{ nd.username }}"
+                                    data-nhom-ids="{% for g in nd.groups.all %}{{ g.id }}{% if not forloop.last %},{% endif %}{% endfor %}">
+                                    ⚙️ Phân quyền
+                                </button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" style="text-align:center;color:var(--mau-chu-mo);padding:32px">Chưa có tài
+                                khoản</td>
+                        </tr>
+                        {% endfor %}
+                        <tr class="hang-khong-tim-thay" id="hang-khong-tim-pq">
+                            <td colspan="5" style="text-align:center;padding:28px;color:var(--mau-chu-mo)">
+                                🔍 Không tìm thấy tài khoản nào
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- COT PHAI: Danh sach tat ca nhom quyen -->
+    <div>
+        <div class="the">
+            <div class="the-tieu-de">🏷️ Danh Sách Quyền</div>
+            <div class="danh-sach-nhom-phai">
+                {% for nhom in danh_sach_nhom %}
+                <div class="the-nhom-phai">
+                    <div class="ten-nhom-phai">
+                        <span class="icon-nhom">🔑</span>
+                        <strong>{{ nhom.name }}</strong>
+                        <span class="muc-thanh-vien">{{ nhom.user_set.all|length }} người</span>
+                    </div>
+                    <div class="danh-sach-tv-nho">
+                        {% for nd in nhom.user_set.all %}
+                        <span class="chip-tv-nho">{{ nd.username }}</span>
+                        {% empty %}
+                        <span style="font-size:11px;color:var(--mau-chu-min)">Chưa có thành viên</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% empty %}
+                <div class="trang-thai-trong" style="padding:30px 16px">
+                    <div class="bieu-tuong">🔑</div>
+                    <p>Chưa có nhóm quyền nào</p>
+                    <p style="font-size:11px;color:var(--mau-chu-min)">Admin chưa tạo quyền</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- ═══ Modal phan quyen cho user ═══ -->
+<div class="modal-overlay" id="modal-phan-quyen">
+    <div class="modal">
+        <div class="modal-tieu-de" id="tieu-de-modal-pq">⚙️ Phân Quyền</div>
+        <p style="font-size:12px;color:var(--mau-chu-mo);margin-bottom:14px">Chọn nhóm quyền để gán cho tài khoản này
+        </p>
+        <div id="danh-sach-check-nhom" class="danh-sach-quyen-modal"></div>
+        <div class="modal-hanh-dong">
+            <button id="btn-dong-pq" class="btn btn-vien">Hủy</button>
+            <button id="btn-luu-pq" class="btn btn-chinh">💾 Lưu phân quyền</button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js_trang %}
+<script src="{% static 'js/quan_ly.js' %}?v=2"></script>
+{% endblock %}

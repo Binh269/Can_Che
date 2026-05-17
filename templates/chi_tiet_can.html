@@ -1,0 +1,275 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block tieu_de %}{{ can.ten_can }} - WeightMS{% endblock %}
+
+{% block css_trang %}
+<link rel="stylesheet" href="{% static 'css/can.css' %}">
+{% endblock %}
+
+{% block noi_dung %}
+
+<!-- Du lieu cho JS (khong hien thi) -->
+<div id="du-lieu-trang"
+     data-ma-can="{{ can.ma_can }}"
+     data-kl-toi-da="{{ can.khoi_luong_toi_da }}"
+    data-api-can="{{ can.api }}"
+     data-api-du-lieu="{% url 'api_du_lieu_can' can.ma_can %}"
+     data-api-nhan-dien="{% url 'api_nhan_dien_trong_luong_can' can.ma_can %}"
+     data-api-lich-su="{% url 'api_lich_su_can' can.ma_can %}"
+    data-api-sua="{% url 'api_sua_can' can.ma_can %}"
+    data-cho-phep-sua="{% if cho_phep_sua_can %}1{% else %}0{% endif %}"
+     data-cameras='[{% for cam in cameras %}{"id":{{ cam.id }},"ten":"{{ cam.ten_camera }}","api":"{{ cam.api }}"}{% if not forloop.last %},{% endif %}{% endfor %}]'
+     style="display:none">
+</div>
+
+<!-- Tieu de chi tiet -->
+<div class="tieu-de-chi-tiet">
+    <div class="tieu-de-chi-tiet-trai">
+        <a href="{% url 'danh_sach_can' %}" class="btn btn-vien btn-nho">← Quay lại</a>
+        <div class="bieu-tuong-can-lon">⚖️</div>
+        <div>
+            <h1 style="font-size:22px;font-weight:700;color:var(--mau-chu)">{{ can.ten_can }}</h1>
+            <div style="font-size:12px;color:var(--mau-chinh);font-family:monospace;font-weight:600">
+                {{ can.ma_can }}
+            </div>
+        </div>
+    </div>
+    {% if can.hoat_dong %}
+        <span class="badge badge-xanh-la" style="font-size:13px;padding:6px 14px">
+            <span class="dot-nhap-nhay"></span> Đang hoạt động
+        </span>
+    {% else %}
+        <span class="badge badge-do" style="font-size:13px;padding:6px 14px">⏹ Đã tắt</span>
+    {% endif %}
+</div>
+
+<!-- Luoi 2 cot: camera + thong tin can -->
+<div class="luoi-chi-tiet">
+
+    <!-- Cot trai: Camera + Khoi luong hien tai -->
+    <div>
+        <!-- Khoi luong hien tai -->
+        <div class="the" style="margin-bottom:20px">
+            <div class="the-tieu-de">📊 Khối Lượng Hiện Tại</div>
+            <div class="so-khoi-luong-lon" style="text-align:center;padding:20px 0">
+                <div class="so" id="kl-hien-tai" style="font-size:72px;font-weight:800;letter-spacing:-3px;background:linear-gradient(135deg,var(--mau-chinh),var(--mau-xanh-la));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">
+                    --
+                </div>
+                <div class="don-vi" style="font-size:20px;color:var(--mau-chu-mo);margin-top:6px">kg</div>
+            </div>
+            <div style="text-align:center">
+                <div class="thanh-nen" style="height:6px;max-width:300px;margin:0 auto">
+                    <div class="thanh-day" id="thanh-tai-trong" style="width:0%"></div>
+                </div>
+                <div id="phan-tram-tai" style="font-size:12px;color:var(--mau-chu-mo);margin-top:8px">
+                    Tải trọng: 0% / {{ can.khoi_luong_toi_da }} kg
+                </div>
+                <div id="thoi-gian-do" style="font-size:11px;color:var(--mau-chu-min);margin-top:4px">
+                    Chưa có dữ liệu
+                </div>
+            </div>
+        </div>
+
+        <!-- Phan camera -->
+        {% if cameras %}
+        <div class="the">
+            <div class="the-tieu-de">📷 Camera Giám Sát</div>
+
+            <!-- Selector camera neu co nhieu camera -->
+            {% if cameras|length > 1 %}
+            <div style="margin-bottom:14px">
+                <select id="chon-camera" class="form-o-chon">
+                    {% for cam in cameras %}
+                    <option value="{{ cam.id }}" data-api="{{ cam.api }}">{{ cam.ten_camera }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+
+            <!-- Khung video -->
+            <div class="khung-camera" id="khung-camera">
+                <video id="video-stream" class="video-stream" autoplay playsinline muted></video>
+                <div class="khung-camera-cho" id="man-hinh-cho">
+                    <div class="bieu-tuong">📷</div>
+                    <p>Nhấn "Bắt đầu stream" để xem camera</p>
+                </div>
+                <div class="trang-thai-stream" id="trang-thai-stream" style="display:none">
+                    <span class="dot-nhap-nhay"></span> Đang stream
+                </div>
+            </div>
+
+            <!-- Nut dieu khien camera -->
+            <div class="dieu-khien-camera">
+                <button id="btn-bat-dau-stream" class="btn btn-xanh-la">
+                    ▶ Bắt đầu stream
+                </button>
+                <button id="btn-dung-stream" class="btn btn-do" style="display:none">
+                    ⏹ Dừng stream
+                </button>
+                <span id="trang-thai-ket-noi" style="font-size:12px;color:var(--mau-chu-mo);align-self:center">
+                    Chưa kết nối
+                </span>
+            </div>
+        </div>
+        {% else %}
+        <div class="the">
+            <div class="trang-thai-trong">
+                <div class="bieu-tuong">📷</div>
+                <p>Chưa có camera nào được cấu hình</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Cot phai: Thong tin can -->
+    <div>
+        <div class="the" style="margin-bottom:20px">
+            <div class="the-tieu-de the-tieu-de-phan-bo">
+                <span>ℹ️ Thông Tin Cân</span>
+                {% if cho_phep_sua_can %}
+                <button id="btn-mo-sua-can" class="btn btn-vien btn-nho">✏️ Sửa thông tin</button>
+                {% endif %}
+            </div>
+            <div class="luoi-thong-tin-can-chi-tiet">
+                <div class="o-thong-tin-chi-tiet">
+                    <div class="nhan">Mã cân</div>
+                    <div class="gia-tri" id="gt-ma-can" style="font-family:monospace;color:var(--mau-chinh)">{{ can.ma_can }}</div>
+                </div>
+                <div class="o-thong-tin-chi-tiet">
+                    <div class="nhan">Hãng</div>
+                    <div class="gia-tri" id="gt-hang">{{ can.hang }}</div>
+                </div>
+                <div class="o-thong-tin-chi-tiet">
+                    <div class="nhan">Vị trí</div>
+                    <div class="gia-tri" id="gt-vi-tri">{{ can.vi_tri }}</div>
+                </div>
+                <div class="o-thong-tin-chi-tiet">
+                    <div class="nhan">Ngày lắp đặt</div>
+                    <div class="gia-tri" id="gt-ngay-lap-dat">{{ can.ngay_lap_dat }}</div>
+                </div>
+                <div class="o-thong-tin-chi-tiet">
+                    <div class="nhan">Tối đa</div>
+                    <div class="gia-tri" id="gt-khoi-luong-toi-da">{{ can.khoi_luong_toi_da }} kg</div>
+                </div>
+                <div class="o-thong-tin-chi-tiet">
+                    <div class="nhan">Trạng thái</div>
+                    <div class="gia-tri" id="gt-trang-thai-can">{% if can.hoat_dong %}🟢 Hoạt động{% else %}🔴 Tắt{% endif %}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Anh moi nhat -->
+        <div class="the">
+            <div class="the-tieu-de">🖼️ Ảnh Mới Nhất</div>
+            <div id="khu-anh-moi-nhat" style="text-align:center;min-height:120px;display:flex;align-items:center;justify-content:center">
+                <span style="color:var(--mau-chu-mo);font-size:13px">Chưa có ảnh</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if cho_phep_sua_can %}
+<!-- Modal sua thong tin can -->
+<div class="modal-overlay" id="modal-sua-can">
+    <div class="modal modal-sua-can">
+        <div class="modal-tieu-de">✏️ Sửa Thông Tin Cân</div>
+
+        <div class="luoi-2-cot">
+            <div class="form-nhom">
+                <label class="form-nhan">Mã cân</label>
+                <input type="text" class="form-o-nhap" value="{{ can.ma_can }}" disabled>
+            </div>
+            <div class="form-nhom">
+                <label class="form-nhan">Tên cân *</label>
+                <input type="text" id="sua-ten-can" class="form-o-nhap" value="{{ can.ten_can }}">
+            </div>
+        </div>
+
+        <div class="form-nhom">
+            <label class="form-nhan">Vị trí *</label>
+            <input type="text" id="sua-vi-tri" class="form-o-nhap" value="{{ can.vi_tri }}">
+        </div>
+
+        <div class="luoi-2-cot">
+            <div class="form-nhom">
+                <label class="form-nhan">Hãng *</label>
+                <input type="text" id="sua-hang" class="form-o-nhap" value="{{ can.hang }}">
+            </div>
+            <div class="form-nhom">
+                <label class="form-nhan">Ngày lắp đặt *</label>
+                <input type="date" id="sua-ngay-lap-dat" class="form-o-nhap" value="{{ can.ngay_lap_dat|date:'Y-m-d' }}">
+            </div>
+        </div>
+
+        <div class="luoi-2-cot">
+            <div class="form-nhom">
+                <label class="form-nhan">Khối lượng tối đa (kg) *</label>
+                <input type="number" id="sua-khoi-luong-toi-da" class="form-o-nhap" value="{{ can.khoi_luong_toi_da }}" step="0.1" min="0">
+            </div>
+            <div class="form-nhom">
+                <label class="form-nhan">Trạng thái</label>
+                <label class="check-label-nho" style="margin-top:12px;display:inline-flex;align-items:center;gap:8px">
+                    <input type="checkbox" id="sua-hoat-dong" {% if can.hoat_dong %}checked{% endif %}>
+                    Đang hoạt động
+                </label>
+            </div>
+        </div>
+
+        <div class="form-nhom">
+            <label class="form-nhan">API endpoint *</label>
+            <input type="text" id="sua-api" class="form-o-nhap" value="{{ can.api }}">
+        </div>
+
+        <div class="modal-hanh-dong">
+            <button id="btn-dong-sua-can" class="btn btn-vien">Hủy</button>
+            <button id="btn-luu-sua-can" class="btn btn-chinh">💾 Lưu thay đổi</button>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Lich su ban ghi -->
+<div class="the the-lich-su">
+    <div class="the-tieu-de" style="justify-content:space-between">
+        <span>📋 Lịch Sử Bản Ghi</span>
+        <button id="btn-lam-moi-lich-su" class="btn btn-vien btn-nho">🔄 Làm mới</button>
+    </div>
+
+    <div class="bang-container">
+        <table class="bang">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Khối lượng</th>
+                    <th>Thời gian</th>
+                    <th>Ảnh</th>
+                </tr>
+            </thead>
+            <tbody id="body-lich-su">
+                <tr>
+                    <td colspan="4" style="text-align:center;color:var(--mau-chu-mo);padding:24px">
+                        Đang tải...
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Phan trang -->
+    <div class="phan-trang" id="phan-trang"></div>
+</div>
+
+<!-- Modal xem anh lon -->
+<div class="modal-overlay" id="modal-anh">
+    <div class="modal modal-anh" id="hop-modal-anh">
+        <img id="anh-phong-to" src="" alt="Ảnh bản ghi">
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js_trang %}
+<script src="{% static 'js/webrtc.js' %}"></script>
+<script src="{% static 'js/chi_tiet_can.js' %}"></script>
+{% endblock %}

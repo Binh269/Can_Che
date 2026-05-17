@@ -1,0 +1,190 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="He thong quan ly can dien tu - giam sat can nang theo thoi gian thuc">
+    <title>{% block tieu_de %}He Thong Quan Ly Can{% endblock %}</title>
+
+    <link rel="stylesheet" href="{% static 'css/chung.css' %}?v=3">
+    {% block css_trang %}{% endblock %}
+
+    <link rel="icon" type="image/x-icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚖️</text></svg>">
+</head>
+
+<body>
+
+    <!-- Thanh dieu huong -->
+    <nav class="navbar">
+        <!-- Logo -->
+        <a href="{% url 'trang_chu' %}" class="navbar-logo">
+            <div class="logo-icon">⚖️</div>
+            <span>WeightMS</span>
+        </a>
+
+        <!-- Menu chinh (an tren mobile, hien khi bam hamburger) -->
+        <div class="navbar-menu" id="navbar-menu">
+            <a href="{% url 'trang_chu' %}"
+                class="nav-link {% if request.resolver_match.url_name == 'trang_chu' %}active{% endif %}">
+                🏠 <span>Trang chủ</span>
+            </a>
+            <a href="{% url 'danh_sach_can' %}"
+                class="nav-link {% if request.resolver_match.url_name == 'danh_sach_can' or request.resolver_match.url_name == 'chi_tiet_can' %}active{% endif %}">
+                ⚖️ <span>Cân</span>
+            </a>
+            {% with user_groups=user.groups.all|join:", " %}
+                {% if 'Xem camera' in user_groups %}
+                    <a href="{% url 'xem_camera' %}"
+                        class="nav-link {% if request.resolver_match.url_name == 'xem_camera' or request.resolver_match.url_name == 'xem_camera_can' %}active{% endif %}">
+                        🎥 <span>Camera</span>
+                    </a>
+                {% endif %}
+            {% endwith %}
+
+            {% if user.is_superuser %}
+                <a href="{% url 'quan_ly_nguoi_dung' %}"
+                            class="nav-link {% if request.resolver_match.url_name == 'quan_ly_nguoi_dung' or request.resolver_match.url_name == 'quan_ly_nhom_quyen' %}active{% endif %}">
+                            👥 <span>Quản lý</span>
+                </a>
+            {% else %}
+                {% for g in user.groups.all %}
+                    {% if g.name == 'Quản lý tài khoản' %}
+                        <a href="{% url 'quan_ly_nguoi_dung' %}"
+                            class="nav-link {% if request.resolver_match.url_name == 'quan_ly_nguoi_dung' or request.resolver_match.url_name == 'quan_ly_nhom_quyen' %}active{% endif %}">
+                            👥 <span>Quản lý</span>
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+
+            {% if user.is_authenticated %}
+            <!-- User actions cho mobile -->
+            <div class="mobile-only-user">
+                <a href="#" class="nav-link" id="btn-mo-profile-mobile">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <div class="user-avatar" style="width:26px; height:26px; font-size:11px;">{{ user.username|first|upper }}</div>
+                        <span style="font-weight:600; color:var(--mau-chu);">Hồ sơ ({{ user.username }})</span>
+                    </div>
+                </a>
+                <a href="{% url 'trang_dang_xuat' %}" class="nav-link" style="color:var(--mau-do);">
+                    ⏻ <span>Đăng xuất</span>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Nguoi dung + Hamburger -->
+        <div class="navbar-user">
+            {% if user.is_authenticated %}
+            <!-- Avatar - click de mo popup chinh sua thong tin ca nhan -->
+            <div class="user-info desktop-only" id="btn-mo-profile" title="Chỉnh sửa thông tin cá nhân">
+                <div class="user-avatar">{{ user.username|first|upper }}</div>
+                <div class="user-text">
+                    <div class="user-name">{{ user.username }}</div>
+                    <div class="user-role">
+                        {% if user.is_superuser %}Quản trị viên
+                        {% elif user.is_staff %}Nhân viên
+                        {% else %}Người dùng{% endif %}
+                    </div>
+                </div>
+            </div>
+            <a href="{% url 'trang_dang_xuat' %}" class="btn-dang-xuat desktop-only">⏻ <span class="text-logout">Đăng xuất</span></a>
+            {% endif %}
+
+            <!-- Hamburger menu (chi hien tren mobile) -->
+            <button class="hamburger" id="hamburger-btn" aria-label="Menu" type="button">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- CSRF Token cho AJAX -->
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <!-- Data nguoi dung hien tai cho JS -->
+    <meta name="user-ho-ten" content="{{ user.last_name }}">
+    <meta name="user-email" content="{{ user.email }}">
+
+    <!-- Vung thong bao (msg class) - tu dong an sau 5s -->
+    <div class="msg" id="vung-thong-bao"></div>
+    {% comment %} Messages will be rendered by JS after trang_chu.js loads. {% endcomment %}
+
+    <!-- Noi dung chinh -->
+    <main class="trang-chinh">
+        {% block noi_dung %}{% endblock %}
+    </main>
+
+    <!-- ═══ Popup chinh sua thong tin ca nhan ═══ -->
+    {% if user.is_authenticated %}
+    <div class="modal-overlay" id="modal-ca-nhan">
+        <div class="modal">
+            <div class="modal-tieu-de">👤 Thông Tin Cá Nhân</div>
+
+            <div class="profile-avatar-lon">{{ user.username|first|upper }}</div>
+
+            <div class="form-nhom">
+                <label class="form-nhan">Tên đăng nhập</label>
+                <input type="text" class="form-o-nhap" value="{{ user.username }}" disabled style="opacity:0.6">
+            </div>
+            <div class="form-nhom">
+                <label class="form-nhan">Họ tên</label>
+                <input type="text" id="ca-nhan-ho-ten" class="form-o-nhap" value="{{ user.last_name }}"
+                    placeholder="Nhập họ tên">
+            </div>
+            <div class="form-nhom">
+                <label class="form-nhan">Email</label>
+                <input type="email" id="ca-nhan-email" class="form-o-nhap" value="{{ user.email }}"
+                    placeholder="email@example.com">
+            </div>
+
+            <div class="duong-phan-cach">Đổi mật khẩu (để trống nếu không đổi)</div>
+
+            <div class="form-nhom">
+                <label class="form-nhan">Mật khẩu hiện tại</label>
+                <input type="password" id="ca-nhan-mk-cu" class="form-o-nhap" placeholder="Nhập mật khẩu hiện tại">
+            </div>
+            <div class="form-nhom">
+                <label class="form-nhan">Mật khẩu mới</label>
+                <input type="password" id="ca-nhan-mk-moi" class="form-o-nhap" placeholder="Tối thiểu 6 ký tự">
+            </div>
+
+            <div class="modal-hanh-dong">
+                <button id="btn-dong-ca-nhan" class="btn btn-vien">Hủy</button>
+                <button id="btn-luu-ca-nhan" class="btn btn-chinh">💾 Lưu thay đổi</button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Nút cuộn lên trên cùng (chỉ hiện trên mobile) -->
+    <button id="btn-cuon-len" class="btn-cuon-len" title="Lên đầu trang">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
+    <!-- JS chung (xu ly thong bao, CSRF, profile popup) -->
+    <script src="{% static 'js/trang_chu.js' %}?v=5"></script>
+    <!-- JS rieng cho tung trang -->
+    {% block js_trang %}{% endblock %}
+
+    {% if messages %}
+    <script>
+    document.addEventListener('DOMContentLoaded', function(){
+        {% for m in messages %}
+            var tag = "{{ m.tags }}" || 'info';
+            var loai = 'thong-tin';
+            if (tag.indexOf('error') !== -1) loai = 'loi';
+            else if (tag.indexOf('success') !== -1) loai = 'thanh-cong';
+            else if (tag.indexOf('warning') !== -1) loai = 'canh-bao';
+            if (window.hienThiThongBao) window.hienThiThongBao("{{ m|escapejs }}", loai);
+        {% endfor %}
+    });
+    </script>
+    {% endif %}
+
+</body>
+
+</html>

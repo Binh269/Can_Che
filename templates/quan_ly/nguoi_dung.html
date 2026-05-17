@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block tieu_de %}Quản Lý Người Dùng - WeightMS{% endblock %}
+
+{% block css_trang %}
+<link rel="stylesheet" href="{% static 'css/quan_ly.css' %}?v=3">
+{% endblock %}
+
+{% block noi_dung %}
+<div class="tieu-de-trang">
+    <h1>👥 Quản Lý Người Dùng</h1>
+    <p>Tạo, chỉnh sửa, phân quyền tài khoản hệ thống</p>
+</div>
+
+<div class="tab-bar">
+    <a href="{% url 'quan_ly_nguoi_dung' %}" class="tab-item active">👤 Người dùng</a>
+    <a href="{% url 'quan_ly_nhom_quyen' %}" class="tab-item">🔑 Phân quyền</a>
+</div>
+
+<div class="ql-header">
+    <div style="color:var(--mau-chu-mo)">
+        <strong style="color:var(--mau-chu)">{{ danh_sach_nguoi_dung|length }}</strong> tài khoản
+    </div>
+    <div class="tim-kiem-bang">
+        <span class="icon-tim-kiem">🔍</span>
+        <input type="text" id="inp-tim-nguoi-dung" class="o-tim-kiem" placeholder="Tìm theo tên, email..."
+            autocomplete="off">
+        <button class="btn-xoa-tim" id="btn-xoa-tim-nd" title="Xóa tìm kiếm">✕</button>
+    </div>
+    <button id="btn-mo-modal-tao-tk" class="btn btn-chinh">➕ Tạo tài khoản</button>
+</div>
+
+<!-- Data cho JS -->
+<div id="du-lieu-trang" style="display:none" data-api-tao="{% url 'api_tao_tai_khoan' %}">
+</div>
+
+<!-- Bang tai khoan -->
+<div class="the">
+    <div class="bang-container-ql">
+        <table class="bang" id="bang-nguoi-dung">
+            <thead>
+                <tr>
+                    <th class="col-stt">#</th>
+                    <th>Người dùng</th>
+                    <th class="col-email">Email</th>
+                    <th class="col-vai-tro">Vai trò</th>
+                    <th class="col-trang-thai">Trạng thái</th>
+                    <th class="col-thao-tac">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for nd in danh_sach_nguoi_dung %}
+                <tr id="hang-nd-{{ nd.id }}">
+                    <td class="col-stt" data-label="STT" style="color:var(--mau-chu-mo);font-size:12px">
+                        {{forloop.counter }}</td>
+                    <td data-label="Người dùng">
+                        <div class="ten-nguoi-dung-cell">
+                            <div class="avatar-nguoi-dung avatar-{% cycle 'xanh' 'tim' 'xanh-la' 'do' %}">
+                                {{ nd.username|first|upper }}
+                            </div>
+                            <div>
+                                <div class="ten">{{ nd.username }}</div>
+                                {% if nd.last_name %}<div class="ho-ten">Họ tên : {{ nd.last_name }}</div>{% endif %}
+                            </div>
+                        </div>
+                    </td>
+
+                    <td class="col-email" data-label="Email" style="color:var(--mau-chu-mo);font-size:13px">
+                        {{nd.email|default:"—" }}</td>
+                    <td class="col-vai-tro" data-label="Vai trò">
+                        {% if nd.is_superuser %}
+                        <span class="badge badge-xanh" id="role-badge-{{ nd.id }}">👑 Admin</span>
+                        {% else %}
+                        <span class="badge" id="role-badge-{{ nd.id }}">👤 Người dùng</span>
+                        {% endif %}
+                    </td>
+
+                    <td class="col-trang-thai" data-label="Trạng thái">
+                        {% if nd.is_active %}
+                        <span class="badge badge-xanh-la" id="status-badge-{{ nd.id }}">🟢 Hoạt động</span>
+                        {% else %}
+                        <span class="badge badge-do" id="status-badge-{{ nd.id }}">🔒 Bị khóa</span>
+                        {% endif %}
+                    </td>
+
+                    <!-- Dropdown thao tac - an voi chinh minh -->
+                    <td class="col-thao-tac" data-label="Thao tác">
+                        {% if nd.id != request.user.id %}
+                        <div class="dropdown">
+                            <button class="btn btn-vien btn-nho dropdown-toggle">Thao tác</button>
+                            <div class="dropdown-menu">
+                                <button class="dropdown-item btn-sua" data-nd-id="{{ nd.id }}"
+                                    data-nd-ten="{{ nd.username }}" data-nd-ho="{{ nd.last_name }}"
+                                    data-nd-email="{{ nd.email }}">
+                                    ✏️ Sửa tài khoản
+                                </button>
+                                <button class="dropdown-item btn-reset-mk" data-nd-id="{{ nd.id }}"
+                                    data-nd-ten="{{ nd.username }}">
+                                    🔑 Reset mật khẩu
+                                </button>
+                                <div class="dropdown-divider"></div>
+                                <button class="dropdown-item btn-khoa" data-nd-id="{{ nd.id }}"
+                                    data-nd-ten="{{ nd.username }}"
+                                    data-dang-khoa="{{ nd.is_active|yesno:'false,true' }}">
+                                    {% if nd.is_active %}🔒 Khóa tài khoản{% else %}🔓 Mở khóa{% endif %}
+                                </button>
+                                <button class="dropdown-item btn-admin" data-nd-id="{{ nd.id }}"
+                                    data-nd-ten="{{ nd.username }}"
+                                    data-la-admin="{{ nd.is_staff|yesno:'true,false' }}">
+                                    {% if nd.is_staff %}👤 Bỏ Admin{% else %}👑 Cấp Admin{% endif %}</button>
+                                <div class="dropdown-divider"></div>
+                                <button class="dropdown-item dropdown-item-do btn-xoa-nd" data-nd-id="{{ nd.id }}"
+                                    data-nd-ten="{{ nd.username }}">
+                                    🗑️ Xóa tài khoản
+                                </button>
+                            </div>
+                        </div>
+                        {% else %}
+                        <span style="font-size:11px;color:var(--mau-chu)">(Tài khoản của tôi)</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align:center;color:var(--mau-chu-mo);padding:36px">Chưa có tài khoản nào
+                    </td>
+                </tr>
+                {% endfor %}
+                <tr class="hang-khong-tim-thay" id="hang-khong-tim-nd">
+                    <td colspan="6" style="text-align:center;padding:32px;color:var(--mau-chu-mo)">
+                        🔍 Không tìm thấy tài khoản nào
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal tao tai khoan -->
+<div class="modal-overlay" id="modal-tao-tk">
+    <div class="modal">
+        <div class="modal-tieu-de">➕ Tạo Tài Khoản Mới</div>
+        <div class="luoi-2-cot">
+            <div class="form-nhom">
+                <label class="form-nhan">Tên đăng nhập *</label>
+                <input type="text" id="inp-ten-dang-nhap" class="form-o-nhap" placeholder="vd: nguyen_van_a">
+            </div>
+            <div class="form-nhom">
+                <label class="form-nhan">Họ tên</label>
+                <input type="text" id="inp-ho-ten" class="form-o-nhap" placeholder="Nguyễn Văn A">
+            </div>
+        </div>
+        <div class="form-nhom">
+            <label class="form-nhan">Email</label>
+            <input type="email" id="inp-email" class="form-o-nhap" placeholder="email@example.com">
+        </div>
+        <div class="form-nhom">
+            <label class="form-nhan">Mật khẩu *</label>
+            <input type="password" id="inp-mat-khau" class="form-o-nhap" placeholder="Tối thiểu 6 ký tự">
+        </div>
+        <div class="form-nhom">
+            <label class="form-nhan">Xác nhận mật khẩu *</label>
+            <input type="password" id="inp-mat-khau-check" class="form-o-nhap" placeholder="Nhập lại mật khẩu">
+        </div>
+        <div class="form-nhom">
+            <label class="check-label-nho">
+                <input type="checkbox" id="inp-is-admin"> Là Admin
+            </label>
+        </div>
+        <div class="modal-hanh-dong">
+            <button id="btn-dong-modal-tao-tk" class="btn btn-vien">Hủy</button>
+            <button id="btn-luu-tai-khoan" class="btn btn-chinh">💾 Tạo tài khoản</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal sua tai khoan -->
+<div class="modal-overlay" id="modal-sua-tk">
+    <div class="modal">
+        <div class="modal-tieu-de" id="tieu-de-modal-sua">✏️ Sửa Thông Tin</div>
+        <div class="form-nhom">
+            <label class="form-nhan">Họ tên</label>
+            <input type="text" id="sua-ho-ten" class="form-o-nhap">
+        </div>
+        <div class="form-nhom">
+            <label class="form-nhan">Email</label>
+            <input type="email" id="sua-email" class="form-o-nhap">
+        </div>
+        <div class="modal-hanh-dong">
+            <button id="btn-dong-sua-tk" class="btn btn-vien">Hủy</button>
+            <button id="btn-luu-sua-tk" class="btn btn-chinh">💾 Lưu</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal reset mat khau -->
+<div class="modal-overlay" id="modal-reset-mk">
+    <div class="modal">
+        <div class="modal-tieu-de" id="tieu-de-modal-reset">🔑 Reset Mật Khẩu</div>
+        <div class="form-nhom">
+            <label class="form-nhan">Mật khẩu mới *</label>
+            <input type="password" id="reset-mat-khau-moi" class="form-o-nhap" placeholder="Tối thiểu 6 ký tự">
+        </div>
+        <div class="modal-hanh-dong">
+            <button id="btn-dong-reset-mk" class="btn btn-vien">Hủy</button>
+            <button id="btn-luu-reset-mk" class="btn btn-chinh">🔑 Đặt lại</button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js_trang %}
+<script src="{% static 'js/quan_ly.js' %}?v=2"></script>
+{% endblock %}

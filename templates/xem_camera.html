@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block tieu_de %}Xem Camera{% endblock %}
+
+{% block css_trang %}
+<link rel="stylesheet" href="{% static 'css/xem_camera.css' %}?v=4">
+{% endblock %}
+
+{% block noi_dung %}
+<div class="card">
+    <div class="card-header">
+        <h3>Xem Camera</h3>
+    </div>
+    <div class="card-body camera-grid">
+        {% for url in camera_urls %}
+            <div class="camera-cell" role="button" tabindex="0" data-url="{{ url }}">
+                {% if url %}
+                    <img class="camera-feed" src="{{ url }}" alt="Camera stream" referrerpolicy="no-referrer">
+                {% else %}
+                    <div class="camera-empty">Chưa có URL</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Modal fullscreen -->
+<div id="modal-camera" class="modal-camera" aria-hidden="true">
+    <div class="wrap">
+        <button class="btn-dong">Đóng</button>
+        <img id="modal-camera-img" src="" alt="Camera stream">
+        <iframe id="modal-camera-iframe" src="" frameborder="0" allowfullscreen style="display:none"></iframe>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js_trang %}
+<script src="{% static 'js/xem_camera.js' %}?v=2"></script>
+{% endblock %}

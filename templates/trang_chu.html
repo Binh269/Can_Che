@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block tieu_de %}Trang Chủ - WeightMS{% endblock %}
+
+{% block css_trang %}
+<link rel="stylesheet" href="{% static 'css/trang_chu.css' %}">
+{% endblock %}
+
+{% block noi_dung %}
+
+<!-- Du lieu cho JS polling -->
+<div id="du-lieu-can-list" style="display:none"
+     data-api-url="{% url 'api_tat_ca_can' %}"
+     data-api-bieu-do="{% url 'api_bieu_do_trang_chu' %}"
+     data-api-lich-su="{% url 'api_lich_su_trang_chu' %}"
+     data-can-list='[{% for can in danh_sach_can %}{"ma_can":"{{ can.ma_can }}","kl_toi_da":{{ can.khoi_luong_toi_da }}}{% if not forloop.last %},{% endif %}{% endfor %}]'>
+</div>
+{{ bieu_do_trang_chu|json_script:"du-lieu-bieu-do-ban-dau" }}
+
+<div class="tieu-de-trang">
+    <h1>📊 Tổng Quan Hệ Thống</h1>
+    <p>Giám sát cân theo thời gian thực · Cập nhật mỗi 5 giây</p>
+</div>
+
+<div class="luoi-thong-ke">
+    <div class="the-thong-ke">
+        <div class="bieu-tuong-thong-ke xanh">⚖️</div>
+        <div class="noi-dung-thong-ke">
+            <div class="so" id="so-tong-can">{{ thong_ke.tong_can }}</div>
+            <div class="nhan">Tổng số cân</div>
+        </div>
+    </div>
+    <div class="the-thong-ke xanh-la">
+        <div class="bieu-tuong-thong-ke xanh-la">🟢</div>
+        <div class="noi-dung-thong-ke">
+            <div class="so" id="so-can-hoat-dong">{{ thong_ke.can_hoat_dong }}</div>
+            <div class="nhan">Cân hoạt động</div>
+        </div>
+    </div>
+    <div class="the-thong-ke vang">
+        <div class="bieu-tuong-thong-ke vang">📋</div>
+        <div class="noi-dung-thong-ke">
+            <div class="so" id="so-ban-ghi">{{ thong_ke.tong_ban_ghi }}</div>
+            <div class="nhan">Số bản ghi nhận được trong ngày</div>
+        </div>
+    </div>
+    <div class="the-thong-ke tim">
+        <div class="bieu-tuong-thong-ke tim">📡</div>
+        <div class="noi-dung-thong-ke">
+            <div class="so" id="so-dang-ket-noi">0</div>
+            <div class="nhan">Đang kết nối</div>
+        </div>
+    </div>
+</div>
+
+<div id="luoi-can" class="luoi-can">
+    {% for can in danh_sach_can %}
+    <a href="{% url 'chi_tiet_can' can.ma_can %}" class="the-can {% if not can.hoat_dong %}khong-hoat-dong{% endif %}" id="the-can-{{ can.ma_can }}">
+        <div class="the-can-tieu-de">
+            <div>
+                <div class="ten-can">{{ can.ten_can }}</div>
+                <div class="ma-can">{{ can.ma_can }}</div>
+            </div>
+            {% if can.hoat_dong %}
+                <span class="badge badge-xanh-la"><span class="dot-nhap-nhay"></span> Hoạt động</span>
+            {% else %}
+                <span class="badge badge-do">⏹ Tắt</span>
+            {% endif %}
+        </div>
+
+        <div class="khoi-luong-hien-thi">
+            <div class="khoi-luong-so" id="kl-{{ can.ma_can }}">{% if can.co_du_lieu_hien_tai %}{{ can.khoi_luong_hien_tai|floatformat:1 }}{% else %}--{% endif %}</div>
+            <div class="khoi-luong-don-vi">kg</div>
+            {% if can.co_du_lieu_hien_tai %}
+            <div class="thoi-gian-cap-nhat" id="tg-{{ can.ma_can }}">Cap nhat: {{ can.thoi_gian_cap_nhat }}</div>
+            {% else %}
+            <div class="thoi-gian-cap-nhat" id="tg-{{ can.ma_can }}">Chưa có dữ liệu</div>
+            {% endif %}
+        </div>
+
+        <div class="thanh-phan-tram">
+            <div class="thanh-phan-tram-nhan">
+                <span>Tải trọng</span>
+                <span id="pt-{{ can.ma_can }}">{{ can.phan_tram_tai|floatformat:1 }}%</span>
+            </div>
+            <div class="thanh-nen">
+                <div class="thanh-day {% if can.phan_tram_tai >= 90 %}nguy-hiem{% endif %}" id="thanh-{{ can.ma_can }}" style="width: {{ can.phan_tram_tai }}%"></div>
+            </div>
+        </div>
+
+        <div class="thong-tin-can">
+            <div class="thong-tin-hang">
+                <div class="nhan">Vị trí</div>
+                <div class="gia-tri">{{ can.vi_tri }}</div>
+            </div>
+            <div class="thong-tin-hang">
+                <div class="nhan">Hãng</div>
+                <div class="gia-tri">{{ can.hang }}</div>
+            </div>
+            <div class="thong-tin-hang">
+                <div class="nhan">Tối đa</div>
+                <div class="gia-tri">{{ can.khoi_luong_toi_da }} kg</div>
+            </div>
+            <div class="thong-tin-hang">
+                <div class="nhan">Lắp đặt</div>
+                <div class="gia-tri">{{ can.ngay_lap_dat }}</div>
+            </div>
+        </div>
+    </a>
+    {% empty %}
+    <div class="trang-thai-trong" style="grid-column: 1/-1;">
+        <div class="bieu-tuong">⚖️</div>
+        <p>Chưa có cân nào được cấu hình</p>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="khu-bieu-do the" style="margin-top: 8px">
+    <div class="bieu-do-header">
+        <div class="the-tieu-de" style="margin-bottom: 0">
+            📈 Biểu Đồ Khối Lượng Theo Thời Gian
+        </div>
+        <div class="bieu-do-chu-thich" id="chu-thich-bieu-do"></div>
+    </div>
+    <div class="khung-bieu-do">
+        <canvas id="bieu-do-khoi-luong"></canvas>
+    </div>
+    <div class="bieu-do-trong" id="bieu-do-trong" style="display:none">
+        <span class="bieu-tuong">📊</span>
+        <p>Chưa có dữ liệu để vẽ biểu đồ</p>
+        <p style="font-size:12px;color:var(--mau-chu-min)">Dữ liệu sẽ xuất hiện khi cân hoạt động</p>
+    </div>
+</div>
+
+<div class="the" style="margin-top: 20px">
+    <div class="the-tieu-de" style="justify-content: space-between">
+        <span>🕐 Lịch Sử Gần Đây (Tất Cả Cân)</span>
+        <span id="dem-ban-ghi" style="font-size:12px;font-weight:500;color:var(--mau-chu-mo)">{{ lich_su_gan_day|length }} ban ghi moi nhat</span>
+    </div>
+    <div class="bang-container">
+        <table class="bang">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Cân</th>
+                    <th>Khối lượng</th>
+                    <th>Thời gian</th>
+                    <th>Ảnh</th>
+                </tr>
+            </thead>
+            <tbody id="body-lich-su-chung">
+                {% for b in lich_su_gan_day %}
+                <tr>
+                    <td style="color:var(--mau-chu-mo);font-size:12px">{{ forloop.counter }}</td>
+                    <td><span class="tag-can">{{ b.ma_can }}</span> <span style="font-size:12px;color:var(--mau-chu-mo)">{{ b.ten_can }}</span></td>
+                    <td style="font-weight:700;color:var(--mau-chinh)">{{ b.khoi_luong|floatformat:2 }} kg</td>
+                    <td style="font-size:12px;color:var(--mau-chu-mo)">{{ b.thoi_gian }}</td>
+                    <td>
+                        {% if b.anh %}
+                            <img src="{{ b.anh }}" class="anh-nho-chung" data-url="{{ b.anh }}" alt="anh">
+                        {% else %}
+                            <span style="color:var(--mau-chu-min)">-</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align:center;color:var(--mau-chu-mo);padding:28px">
+                        <span class="spinner"></span> Đang tải...
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modal-anh-trang-chu">
+    <div class="modal" style="max-width:90vw;padding:0;overflow:hidden;background:#fff">
+        <img id="anh-phong-to-trang-chu" src="" alt="Ảnh bản ghi" style="max-width:90vw;max-height:90vh;object-fit:contain;display:block">
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js_trang %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Dang nhap he thong quan ly can">
+    <title>Đăng Nhập - WeightMS</title>
+    <link rel="stylesheet" href="{% static 'css/chung.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dang_nhap.css' %}">
+</head>
+<body class="trang-dang-nhap">
+
+<div class="hop-dang-nhap">
+    <!-- Logo -->
+    <div class="dang-nhap-logo">
+        <div class="logo-icon-lon">⚖️</div>
+        <h1 class="dang-nhap-tieu-de">WeightMS</h1>
+        <p class="dang-nhap-mo-ta">Hệ thống quản lý cân điện tử</p>
+    </div>
+
+    <!-- Thong bao loi -->
+    {% if loi %}
+    <div class="thong-bao-loi">
+        <span>⚠️</span> {{ loi }}
+    </div>
+    {% endif %}
+
+    <!-- Form dang nhap -->
+    <form method="post" id="form-dang-nhap" novalidate>
+        {% csrf_token %}
+
+        <div class="form-nhom">
+            <label for="ten_dang_nhap" class="form-nhan">Tên đăng nhập</label>
+            <input
+                type="text"
+                id="ten_dang_nhap"
+                name="ten_dang_nhap"
+                class="form-o-nhap dang-nhap-o-nhap"
+                placeholder="Nhập tên đăng nhập"
+                autocomplete="username"
+                required
+            >
+        </div>
+
+        <div class="form-nhom">
+            <label for="mat_khau" class="form-nhan">Mật khẩu</label>
+            <input
+                type="password"
+                id="mat_khau"
+                name="mat_khau"
+                class="form-o-nhap dang-nhap-o-nhap"
+                placeholder="Nhập mật khẩu"
+                autocomplete="current-password"
+                required
+            >
+        </div>
+
+        <button type="submit" class="btn btn-chinh btn-dang-nhap-chinh" id="btn-dang-nhap">
+            🔐 Đăng nhập
+        </button>
+    </form>
+
+    <p class="dang-nhap-chu-thich">
+        Phiên đăng nhập được lưu trong <strong>1 ngày</strong>
+    </p>
+</div>
+
+<!-- Hieu ung nen -->
+<div class="nen-hieu-ung" aria-hidden="true">
+    <div class="vong-tron v1"></div>
+    <div class="vong-tron v2"></div>
+    <div class="vong-tron v3"></div>
+</div>
+
+</body>
+</html>

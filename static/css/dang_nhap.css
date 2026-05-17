@@ -1,0 +1,120 @@
+/* ═══════════════════════════════════════════════════════════
+   dang_nhap.css - Trang dang nhap - LIGHT THEME
+   ═══════════════════════════════════════════════════════════ */
+
+body.trang-dang-nhap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #e8f0fc 0%, #f5f8ff 50%, #eaf3fb 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.hop-dang-nhap {
+    position: relative;
+    z-index: 10;
+    background: #ffffff;
+    border: 1px solid rgba(0, 90, 200, 0.15);
+    border-radius: 20px;
+    padding: 44px 48px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow:
+        0 4px 24px rgba(0, 80, 200, 0.1),
+        0 1px 4px rgba(0, 0, 0, 0.06),
+        0 20px 60px rgba(0, 60, 180, 0.08);
+}
+
+.dang-nhap-logo { text-align: center; margin-bottom: 32px; }
+
+.logo-icon-lon {
+    font-size: 48px;
+    margin-bottom: 12px;
+    display: block;
+    animation: nhip-tim 3s ease-in-out infinite;
+}
+@keyframes nhip-tim {
+    0%, 100% { transform: scale(1); }
+    50%       { transform: scale(1.06); }
+}
+
+.dang-nhap-tieu-de {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--mau-chinh);
+    letter-spacing: -1px;
+    margin-bottom: 4px;
+}
+
+.dang-nhap-mo-ta { font-size: 13px; color: var(--mau-chu-mo); }
+
+.thong-bao-loi {
+    padding: 10px 14px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: var(--canh-tron-nho);
+    color: #b91c1c;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 8px;
+    animation: rung 0.4s ease;
+}
+@keyframes rung {
+    0%, 100% { transform: translateX(0); }
+    25%       { transform: translateX(-5px); }
+    75%       { transform: translateX(5px); }
+}
+
+.dang-nhap-o-nhap { font-size: 14px; padding: 12px 16px; }
+
+.btn-dang-nhap-chinh {
+    width: 100%;
+    justify-content: center;
+    padding: 13px;
+    font-size: 15px;
+    font-weight: 700;
+    margin-top: 8px;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0,112,224,0.35);
+}
+
+.dang-nhap-chu-thich {
+    text-align: center;
+    font-size: 12px;
+    color: var(--mau-chu-min);
+    margin-top: 20px;
+}
+
+/* Hieu ung nen sang */
+.nen-hieu-ung {
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 0;
+    overflow: hidden;
+}
+.vong-tron {
+    position: absolute;
+    border-radius: 50%;
+    animation: noi-len 10s ease-in-out infinite;
+}
+.vong-tron.v1 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(0,112,224,0.07) 0%, transparent 65%);
+    top: -150px; left: -150px; animation-delay: 0s;
+}
+.vong-tron.v2 {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(0,180,255,0.06) 0%, transparent 65%);
+    bottom: -100px; right: -100px; animation-delay: 4s;
+}
+.vong-tron.v3 {
+    width: 250px; height: 250px;
+    background: radial-gradient(circle, rgba(124,58,237,0.05) 0%, transparent 65%);
+    top: 40%; left: 55%; animation-delay: 7s;
+}
+@keyframes noi-len {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50%       { transform: translate(15px, -15px) scale(1.04); }
+}

@@ -1,0 +1,594 @@
+/* ═══════════════════════════════════════════════════════════
+   quan_ly.css - Quan ly nguoi dung / phan quyen - LIGHT THEME
+   ═══════════════════════════════════════════════════════════ */
+
+/* ─── Tab bar ─────────────────────────────────────────────── */
+.tab-bar {
+    display: flex; gap: 4px;
+    margin-bottom: 24px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 0;
+}
+.tab-item {
+    padding: 10px 20px;
+    border-radius: var(--canh-tron-nho) var(--canh-tron-nho) 0 0;
+    font-size: 14px; font-weight: 600;
+    color: var(--mau-chu-mo);
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-bottom: none;
+    transition: all var(--thoi-gian);
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: -2px;
+}
+.tab-item:hover { color: var(--mau-chinh); background: #f0f7ff; }
+.tab-item.active {
+    color: var(--mau-chinh);
+    background: #ffffff;
+    border-color: #e2e8f0;
+    border-bottom-color: #fff;
+}
+
+/* ─── Header ─────────────────────────────────────────────── */
+.ql-header {
+    display: flex; align-items: center; justify-content: flex-end;
+    margin-bottom: 20px; gap: 16px; flex-wrap: wrap;
+}
+
+/* ─── Tim kiem ───────────────────────────────────────────── */
+.tim-kiem-bang {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 9px;
+    padding: 0 10px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    min-width: 220px;
+}
+.tim-kiem-bang:focus-within {
+    border-color: var(--mau-chinh);
+    box-shadow: 0 0 0 3px rgba(0, 112, 224, 0.1);
+    background: #fff;
+}
+.icon-tim-kiem {
+    font-size: 14px;
+    color: var(--mau-chu-mo);
+    flex-shrink: 0;
+    margin-right: 6px;
+    user-select: none;
+}
+.o-tim-kiem {
+    flex: 1;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 13px;
+    color: var(--mau-chu);
+    font-family: var(--font);
+    padding: 8px 0;
+    min-width: 0;
+}
+.o-tim-kiem::placeholder { color: var(--mau-chu-mo); }
+.btn-xoa-tim {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--mau-chu-mo);
+    padding: 0 0 0 6px;
+    line-height: 1;
+    display: none;   /* An khi o trong --> JS hien */
+    transition: color 0.12s;
+    flex-shrink: 0;
+}
+.btn-xoa-tim:hover { color: var(--mau-do); }
+.btn-xoa-tim.hien { display: inline-flex; }
+
+/* Thong bao khong tim thay */
+.hang-khong-tim-thay {
+    display: none;
+}
+.hang-khong-tim-thay.hien {
+    display: table-row;
+}
+
+/* ─── Bang nguoi dung ─────────────────────────────────────── */
+.avatar-nguoi-dung {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.avatar-xanh    { background: linear-gradient(135deg, var(--mau-chinh), #0055b8); }
+.avatar-tim     { background: linear-gradient(135deg, var(--mau-tim), #5b21b6); }
+.avatar-xanh-la { background: linear-gradient(135deg, var(--mau-xanh-la), #047857); }
+.avatar-do      { background: linear-gradient(135deg, var(--mau-do), #991b1b); }
+
+.ten-nguoi-dung-cell { display: flex; align-items: center; gap: 10px; }
+.ten-nguoi-dung-cell .ten    { font-weight: 600; color: var(--mau-chu); font-size: 13px; }
+.ten-nguoi-dung-cell .ho-ten { font-size: 11px; color: var(--mau-chu-mo); }
+
+/* ─── Tag nhom ────────────────────────────────────────────── */
+.danh-sach-tag-nhom { display: flex; flex-wrap: wrap; gap: 5px; }
+.tag-nhom {
+    padding: 2px 9px;
+    background: var(--mau-chinh-nhat);
+    border: 1px solid rgba(0,112,224,0.2);
+    border-radius: 20px;
+    font-size: 11px; font-weight: 600; color: var(--mau-chinh);
+}
+
+/* ─── The nhom quyen ─────────────────────────────────────── */
+.luoi-nhom {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+}
+
+.the-nhom {
+    background: #fff;
+    border: 1px solid var(--mau-vien);
+    border-radius: var(--canh-tron);
+    padding: 20px;
+    box-shadow: var(--bong-the);
+    transition: all var(--thoi-gian);
+}
+.the-nhom:hover { border-color: var(--mau-vien-sang); box-shadow: 0 4px 20px rgba(0,80,200,0.1); }
+
+.the-nhom-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.ten-nhom { font-size: 15px; font-weight: 700; color: var(--mau-chu); display: flex; align-items: center; gap: 8px; }
+.muc-thanh-vien { font-size: 12px; font-weight: 500; color: var(--mau-chu-mo); }
+
+.danh-sach-thanh-vien { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; min-height: 28px; }
+.chip-thanh-vien {
+    display: flex; align-items: center; gap: 4px;
+    padding: 3px 10px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    font-size: 12px; font-weight: 500; color: var(--mau-chu-mo);
+}
+
+.danh-sach-quyen { display: flex; flex-direction: column; gap: 5px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #f1f5f9; }
+.hang-quyen { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--mau-chu-mo); }
+.hang-quyen.co-quyen { color: #047857; font-weight: 500; }
+.hang-quyen .bieu-tuong { font-size: 13px; }
+
+/* ─── Modal: checkbox quyen ──────────────────────────────── */
+.danh-sach-quyen-modal {
+    max-height: 260px; overflow-y: auto;
+    display: flex; flex-direction: column; gap: 4px; padding: 2px 0;
+}
+.hang-quyen-check {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px;
+    border-radius: var(--canh-tron-nho);
+    border: 1px solid #f1f5f9;
+    cursor: pointer;
+    transition: background var(--thoi-gian);
+}
+.hang-quyen-check:hover { background: #f0f7ff; border-color: rgba(0,112,224,0.15); }
+.hang-quyen-check input[type="checkbox"] { accent-color: var(--mau-chinh); width: 15px; height: 15px; cursor: pointer; }
+.hang-quyen-check label { font-size: 13px; color: var(--mau-chu); cursor: pointer; flex: 1; }
+
+.danh-sach-nhom-check {
+    display: flex; flex-direction: column; gap: 4px;
+    max-height: 220px; overflow-y: auto;
+}
+.hang-nhom-check {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px;
+    border-radius: var(--canh-tron-nho);
+    border: 1px solid #f1f5f9;
+    cursor: pointer;
+    transition: background var(--thoi-gian);
+}
+.hang-nhom-check:hover { background: #f0f7ff; border-color: rgba(0,112,224,0.15); }
+.hang-nhom-check input[type="checkbox"] { accent-color: var(--mau-chinh); width: 15px; height: 15px; cursor: pointer; }
+.hang-nhom-check label { font-size: 13px; color: var(--mau-chu); cursor: pointer; flex: 1; }
+
+@media (max-width: 640px) { .luoi-nhom { grid-template-columns: 1fr; } }
+
+/* ─── Dropdown thao tac ──────────────────────────────────── */
+.dropdown { position: relative; display: inline-block; }
+
+.dropdown-toggle {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 12px; white-space: nowrap;
+}
+.dropdown-toggle::after { content: '▾'; font-size: 10px; }
+
+/* Dung position:absolute (JS se tinh top/right theo scrollY)
+   cha cua dropdown-menu la body (khong bi clip boi overflow) */
+.dropdown-menu {
+    display: none;
+    position: absolute;          /* JS set top + right de tranh bi cat */
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: var(--canh-tron-nho);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+    z-index: 9999;               /* Luon o tren cung */
+    min-width: 190px;
+    overflow: hidden;
+}
+.dropdown-menu.hien { display: block; }
+
+.dropdown-item {
+    display: flex; align-items: center; gap: 8px;
+    width: 100%; padding: 10px 14px;
+    background: none; border: none;
+    font-size: 13px; font-weight: 500;
+    color: var(--mau-chu);
+    cursor: pointer; text-align: left;
+    font-family: var(--font);
+    transition: background var(--thoi-gian);
+}
+.dropdown-item:hover { background: #f0f7ff; color: var(--mau-chinh); }
+.dropdown-item-do { color: var(--mau-do) !important; }
+.dropdown-item-do:hover { background: var(--mau-do-nhat) !important; color: var(--mau-do) !important; }
+
+.dropdown-divider {
+    height: 1px; background: #f1f5f9; margin: 4px 0;
+}
+
+/* Chua co quyen */
+.chua-co-quyen {
+    font-size: 11px; 
+    font-style: italic;
+}
+
+
+
+/* ─── Nut bieu tuong thao tac ────────────────────────────── */
+.nhom-thao-tac { display: flex; gap: 4px; flex-wrap: wrap; }
+
+.btn-icon {
+    width: 32px; height: 32px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 7px;
+    font-size: 14px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+    transition: all var(--thoi-gian);
+    padding: 0;
+    color: var(--mau-chu-mo);
+}
+.btn-icon:hover { background: var(--mau-chinh-nhat); border-color: rgba(0,112,224,0.3); transform: scale(1.1); }
+.btn-icon.btn-xoa-nd:hover, .btn-icon.btn-khoa:hover { background: var(--mau-do-nhat); border-color: rgba(220,38,38,0.3); }
+.btn-icon.btn-mo-khoa { background: var(--mau-xanh-la-nhat); border-color: rgba(0,166,90,0.3); }
+.btn-icon.btn-bo-admin { background: var(--mau-vang-nhat); border-color: rgba(217,119,6,0.3); }
+
+/* Hang bi khoa trong bang */
+.hang-bi-khoa td { opacity: 0.5; }
+.hang-bi-khoa { background: #fafafa; }
+
+/* Form 2 cot */
+.luoi-2-cot { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 480px) { .luoi-2-cot { grid-template-columns: 1fr; } }
+
+/* ─── Container bang khong clip overflow (cho dropdown) ─── */
+.bang-container-ql {
+    overflow: visible;           /* Khac bang-container thuong (overflow-x:auto) */
+    width: 100%;
+}
+
+/* ─── Layout phan quyen 2 cot ────────────────────────────── */
+.luoi-phan-quyen {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 20px;
+    align-items: start;
+}
+@media (max-width: 900px) { .luoi-phan-quyen { grid-template-columns: 1fr; } }
+
+/* Checkbox nho trong bang phan quyen */
+.danh-sach-check-nho { display: flex; flex-direction: column; gap: 4px; }
+.check-label-nho {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; color: var(--mau-chu);
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 5px;
+    transition: background var(--thoi-gian);
+}
+.check-label-nho:hover { background: #f0f7ff; }
+.check-label-nho input[type="checkbox"] { accent-color: var(--mau-chinh); width: 14px; height: 14px; cursor: pointer; }
+
+/* The nhom o cot phai phan quyen */
+.danh-sach-nhom-phai { display: flex; flex-direction: column; gap: 10px; }
+.the-nhom-phai {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: var(--canh-tron-nho);
+    padding: 12px 14px;
+}
+.ten-nhom-phai {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 8px;
+    font-size: 13px; color: var(--mau-chu);
+}
+.icon-nhom { font-size: 14px; }
+.danh-sach-tv-nho { display: flex; flex-wrap: wrap; gap: 4px; }
+.chip-tv-nho {
+    padding: 2px 8px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 11px; color: var(--mau-chu-mo);
+}
+
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE MOBILE
+   ═══════════════════════════════════════════════════ */
+
+/* Tablet: an cot email */
+@media (max-width: 900px) {
+    .luoi-phan-quyen { grid-template-columns: 1fr; }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    /* Tab bar cho vua man hinh */
+    .tab-bar { gap: 0; }
+    .tab-item { padding: 9px 14px; font-size: 13px; }
+
+    /* Header ql stack doc */
+    .ql-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .ql-header .btn { width: 100%; justify-content: center; }
+    .tim-kiem-bang { min-width: 0; width: 100%; }
+
+    /* ─── CARD LAYOUT CHO BANG TREN MOBILE ─── */
+    .bang-container, .bang-container-ql {
+        overflow: visible !important;
+        background: transparent;
+        border: none;
+    }
+    
+    .bang, .bang tbody, .bang tr, .bang td {
+        display: block;
+        width: 100%;
+        min-width: 0 !important;
+    }
+    
+    .bang thead {
+        display: none; /* An tieu de cot tren di dong */
+    }
+    
+    .bang tr {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: var(--canh-tron);
+        margin-bottom: 16px;
+        padding: 12px 16px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        position: relative;
+    }
+    .bang tr:hover { background: #fff; } /* Bo hover mau xanh tren mobile */
+
+    .bang tr.hang-khong-tim-thay { display: none; }
+    .bang tr.hang-khong-tim-thay.hien { display: block; }
+    
+    .bang td {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px 0 !important;
+        border-bottom: 1px dashed #e2e8f0;
+        text-align: left;
+    }
+    .bang td:last-child {
+        border-bottom: none;
+        padding-bottom: 0 !important;
+    }
+    
+    .bang tr.hang-khong-tim-thay td {
+        border-bottom: none;
+        padding: 24px 0 !important;
+        text-align: center;
+        align-items: center;
+    }
+    .bang tr.hang-khong-tim-thay td::before {
+        display: none;
+    }
+    
+    /* Hien thi ten cot (data-label) tren cung cua moi o */
+    .bang td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        font-size: 11px;
+        color: var(--mau-chu-mo);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+        display: block;
+        width: 100%;
+    }
+
+    /* Bang nguoi dung: hien lai cac cot de the hien trong card,
+       neu muon an cot nao tren card thi an truc tiep the do */
+    .col-email, .col-vai-tro, .col-trang-thai, .col-stt { display: block; }
+    .col-stt { width: 100%; }
+    
+    /* Chinh lai layout the tag */
+    .danh-sach-tag-nhom { margin-top: 4px; }
+    
+    /* Chinh lai nut thao tac nam rong ra hoac nam ngang */
+    .bang td.col-thao-tac {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: flex-start;
+        align-items: center;
+    }
+    .bang td.col-thao-tac::before {
+        flex-basis: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Dropdown full chieu rong */
+    .dropdown-menu { min-width: 160px; }
+    
+    /* Bang rut gon hon */
+    .bang { font-size: 12px; }
+    .bang thead th { padding: 8px 12px; font-size: 10px; }
+    .bang tbody td { padding: 8px 12px; }
+
+    /* Avatar nho hon */
+    .avatar-nguoi-dung { width: 28px; height: 28px; font-size: 11px; }
+    .ten-nguoi-dung-cell .ten { font-size: 12px; }
+    .ten-nguoi-dung-cell .ho-ten { font-size: 10px; }
+
+    /* Badge nho hon */
+    .badge { font-size: 10px; padding: 2px 7px; }
+
+    /* Col stt nho hon */
+    .col-stt { width: 32px; padding: 8px 6px; }
+}
+
+
+
+/* ═══════════════════════════════════════════════════
+   CUSTOM CONFIRM DIALOG
+   ═══════════════════════════════════════════════════ */
+
+.confirm-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 99998;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0.2s;
+    backdrop-filter: blur(2px);
+}
+.confirm-overlay.hien {
+    opacity: 1;
+    visibility: visible;
+}
+
+.confirm-box {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
+    padding: 28px 28px 22px;
+    min-width: 320px;
+    max-width: 440px;
+    width: 90%;
+    transform: scale(0.88) translateY(12px);
+    transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.confirm-overlay.hien .confirm-box {
+    transform: scale(1) translateY(0);
+}
+
+.confirm-icon {
+    font-size: 36px;
+    text-align: center;
+    margin-bottom: 12px;
+    line-height: 1;
+}
+
+.confirm-tieu-de {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--mau-chu);
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.confirm-noi-dung {
+    font-size: 13.5px;
+    color: var(--mau-chu-mo);
+    text-align: center;
+    line-height: 1.6;
+    margin-bottom: 22px;
+}
+
+.confirm-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.confirm-actions .btn-xac-nhan {
+    flex: 1;
+    padding: 10px 20px;
+    border-radius: 9px;
+    border: none;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: var(--font);
+}
+
+.confirm-actions .btn-huy {
+    flex: 1;
+    padding: 10px 20px;
+    border-radius: 9px;
+    border: 1.5px solid #e2e8f0;
+    background: #fff;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--mau-chu-mo);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: var(--font);
+}
+.confirm-actions .btn-huy:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: var(--mau-chu);
+}
+
+/* Mau xanh la - Mo khoa */
+.confirm-box.loai-mo-khoa .btn-xac-nhan {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(34,197,94,0.35);
+}
+.confirm-box.loai-mo-khoa .btn-xac-nhan:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(34,197,94,0.45);
+}
+
+/* Mau do - Khoa */
+.confirm-box.loai-khoa .btn-xac-nhan {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(239,68,68,0.35);
+}
+.confirm-box.loai-khoa .btn-xac-nhan:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(239,68,68,0.45);
+}
+
+/* Mau xanh duong - Cap admin */
+.confirm-box.loai-cap-admin .btn-xac-nhan {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(59,130,246,0.35);
+}
+.confirm-box.loai-cap-admin .btn-xac-nhan:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(59,130,246,0.45);
+}
+
+/* Mau vang - Bo admin */
+.confirm-box.loai-bo-admin .btn-xac-nhan {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(245,158,11,0.35);
+}
+.confirm-box.loai-bo-admin .btn-xac-nhan:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(245,158,11,0.45);
+}
